@@ -605,6 +605,7 @@ class SidebarCard extends LitElement {
         color: var(--sidebar-alert-icon-color, #c62828);
       }
       .sidebarMenu li.alert {
+        border: 0;
         color: var(--sidebar-alert-text-color, #fff);
       }
       h1 {
