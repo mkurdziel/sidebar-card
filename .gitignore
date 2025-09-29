@@ -1,6 +1,4 @@
-node_modulesnode_modules/
 node_modules/
 .DS_Store
-dist/
 
 .idea/
