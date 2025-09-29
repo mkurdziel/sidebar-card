@@ -52,7 +52,7 @@
   },
   "scripts": {
     "start": "rollup -c --watch",
-    "build": "npm run rollup",
+    "build": "rollup -c",
     "lint": "eslint src/*.ts",
     "rollup": "rollup -c"
   }

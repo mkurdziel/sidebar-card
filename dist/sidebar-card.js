@@ -549,7 +549,8 @@ s.defineLocale("zh-tw",{months:"一月_二月_三月_四月_五月_六月_七月
         border-radius: 12px;
       }
       .sidebarMenu li.alert {
-        border-left: 3px solid var(--sidebar-alert-bg, #c62828);
+        border: 3px solid var(--sidebar-alert-bg, #c62828);
+        color: var(--sidebar-alert-text-color, #fff);
       }
       h1 {
         margin-top: 0;
