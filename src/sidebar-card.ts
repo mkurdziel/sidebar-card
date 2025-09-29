@@ -474,20 +474,34 @@ class SidebarCard extends LitElement {
     this.menuItemAlerts = {};
     if (this.config.sidebarMenu && Array.isArray(this.config.sidebarMenu)) {
       this.config.sidebarMenu.forEach((item, idx) => {
-        if (item && item.has_alert) {
+        if (!item) return;
+        const val = item.has_alert;
+        if (typeof val === 'boolean') {
+          this.menuItemAlerts[idx] = val;
+          return;
+        }
+        if (typeof val === 'string') {
+          const s = val.trim();
+          const looksLikeTemplate = s.includes('{{') || s.includes('{%');
+          if (!looksLikeTemplate) {
+            const lowered = s.toLowerCase();
+            this.menuItemAlerts[idx] = lowered === 'true' || lowered === '1' || lowered === 'yes' || lowered === 'on';
+            return;
+          }
+          // Subscribe to dynamic template
           subscribeRenderTemplate(
             null,
             (res) => {
               try {
-                const val = typeof res === 'string' ? res.trim().toLowerCase() : res;
-                this.menuItemAlerts[idx] = val === true || val === 'true';
+                const rendered = typeof res === 'string' ? res.trim().toLowerCase() : res;
+                this.menuItemAlerts[idx] = rendered === true || rendered === 'true' || rendered === '1' || rendered === 'yes' || rendered === 'on';
               } catch (e) {
                 this.menuItemAlerts[idx] = false;
               }
               this.requestUpdate();
             },
             {
-              template: item.has_alert,
+              template: val,
               variables: { config: this.config, item },
               entity_ids: item.entity_ids || this.config.entity_ids,
             }

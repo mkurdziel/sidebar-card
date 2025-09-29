@@ -122,7 +122,7 @@ Below is a table with options for these actions:
 | `service_data` | object | none | Any service data | Service data to include (e.g. `entity_id: media_player.bedroom`)|
 | `icon` | string | none | Any icon (Eg: `mdi:`) | Display icon besided the name |
 | `state` | string | none | Any entity `light.demo` | Set an entity (light, switch etc.) and when this entities state is on the item will display on and when it is off it will be displayed off |
-| `has_alert` | template | none | Jinja template returning true/false | When the template evaluates to true, the menu item shows a red background and a warning icon (`mdi:alert`); otherwise it renders normally. |
+| `has_alert` | boolean or template | none | `true`/`false` or Jinja template returning true/false | When true, the menu item shows a red background and a warning icon (`mdi:alert`); if a template is provided, it updates reactively based on the rendered value. |
 
 When you use the `navigation` action type (see example below) and set the navigation_path to the lovelace views it will act as a normal menu and display an active state when you are on the url you defined in the sidebarMenu.
 
@@ -138,6 +138,7 @@ sidebar:
     - action: navigate
       navigation_path: "/lovelace/lampen"
       name: "Lampen"
+      has_alert: true  # static alert example
     - action: navigate
       navigation_path: "/lovelace/music"
       name: "Muziek"
