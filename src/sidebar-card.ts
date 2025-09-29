@@ -54,6 +54,8 @@ class SidebarCard extends LitElement {
   _clockInterval: any = null;
   _dateInterval: any = null;
   _boundLocationChange: any;
+  // Tracks per-menu-item alert state resolved from `has_alert` templates
+  menuItemAlerts: { [key: number]: boolean } = {};
 
   /* **************************************** *
    *        Element's public properties       *
@@ -167,14 +169,27 @@ class SidebarCard extends LitElement {
         ${sidebarMenu && sidebarMenu.length > 0
           ? html`
               <ul class="sidebarMenu">
-                ${sidebarMenu.map((sidebarMenuItem) => {
+                ${sidebarMenu.map((sidebarMenuItem, index) => {
+                  const isActive =
+                    sidebarMenuItem.state &&
+                    this.hass.states[sidebarMenuItem.state] &&
+                    this.hass.states[sidebarMenuItem.state].state != 'off' &&
+                    this.hass.states[sidebarMenuItem.state].state != 'unavailable';
+                  const isAlert = !!this.menuItemAlerts[index];
+                  const classes = `${isActive ? 'active ' : ''}${isAlert ? 'alert' : ''}`.trim();
                   return html`
-                    <li @click="${(e) => this._menuAction(e)}" class="${sidebarMenuItem.state && this.hass.states[sidebarMenuItem.state].state != 'off' && this.hass.states[sidebarMenuItem.state].state != 'unavailable' ? 'active' : ''}" data-type="${sidebarMenuItem.action}" data-path="${sidebarMenuItem.navigation_path ? sidebarMenuItem.navigation_path : ''}" data-menuitem="${JSON.stringify(sidebarMenuItem)}">
+                    <li
+                      @click="${(e) => this._menuAction(e)}"
+                      class="${classes}"
+                      data-type="${sidebarMenuItem.action}"
+                      data-path="${sidebarMenuItem.navigation_path ? sidebarMenuItem.navigation_path : ''}"
+                      data-menuitem="${JSON.stringify(sidebarMenuItem)}"
+                    >
                       <span>${sidebarMenuItem.name}</span>
-                      ${sidebarMenuItem.icon
-                        ? html`
-                            <ha-icon @click="${(e) => this._menuAction(e)}" icon="${sidebarMenuItem.icon}"></ha-icon>
-                          `
+                      ${isAlert
+                        ? html`<ha-icon @click="${(e) => this._menuAction(e)}" icon="mdi:alert"></ha-icon>`
+                        : sidebarMenuItem.icon
+                        ? html` <ha-icon @click="${(e) => this._menuAction(e)}" icon="${sidebarMenuItem.icon}"></ha-icon> `
                         : html``}
                     </li>
                   `;
@@ -454,6 +469,32 @@ class SidebarCard extends LitElement {
         }
       );
     }
+
+    // Resolve per-item alert templates for sidebar menu items
+    this.menuItemAlerts = {};
+    if (this.config.sidebarMenu && Array.isArray(this.config.sidebarMenu)) {
+      this.config.sidebarMenu.forEach((item, idx) => {
+        if (item && item.has_alert) {
+          subscribeRenderTemplate(
+            null,
+            (res) => {
+              try {
+                const val = typeof res === 'string' ? res.trim().toLowerCase() : res;
+                this.menuItemAlerts[idx] = val === true || val === 'true';
+              } catch (e) {
+                this.menuItemAlerts[idx] = false;
+              }
+              this.requestUpdate();
+            },
+            {
+              template: item.has_alert,
+              variables: { config: this.config, item },
+              entity_ids: item.entity_ids || this.config.entity_ids,
+            }
+          );
+        }
+      });
+    }
   }
 
   getCardSize() {
@@ -527,6 +568,23 @@ class SidebarCard extends LitElement {
         height: 100%;
         background-color: var(--sidebar-selected-icon-color, #000);
         opacity: 0.12;
+        border-radius: 12px;
+      }
+      .sidebarMenu li.alert {
+        color: var(--sidebar-selected-text-color, #000);
+      }
+      .sidebarMenu li.alert ha-icon {
+        color: var(--sidebar-alert-icon-color, #c62828);
+      }
+      .sidebarMenu li.alert::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: var(--sidebar-alert-bg, #c62828);
+        opacity: 0.18;
         border-radius: 12px;
       }
       h1 {
