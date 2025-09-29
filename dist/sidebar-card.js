@@ -537,21 +537,6 @@ s.defineLocale("zh-tw",{months:"一月_二月_三月_四月_五月_六月_七月
       .sidebarMenu li.alert ha-icon {
         color: var(--sidebar-alert-icon-color, #c62828);
       }
-      //.sidebarMenu li.alert::before {
-      //  content: '';
-      //  position: absolute;
-      //  top: 0;
-      //  left: 0;
-      //  width: 100%;
-      //  height: 100%;
-      //  background-color: var(--sidebar-alert-bg, #c62828);
-      //  opacity: 0.28;
-      //  border-radius: 12px;
-      //}
-      //.sidebarMenu li.alert {
-      //  border: 1px solid var(--sidebar-alert-bg, #c62828);
-      //  color: var(--sidebar-alert-text-color, #fff);
-      //}
       h1 {
         margin-top: 0;
         margin-bottom: 20px;
