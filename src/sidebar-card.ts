@@ -508,6 +508,8 @@ class SidebarCard extends LitElement {
           );
         }
       });
+      // Ensure re-render after processing non-templated values
+      this.requestUpdate();
     }
   }
 
@@ -598,8 +600,11 @@ class SidebarCard extends LitElement {
         width: 100%;
         height: 100%;
         background-color: var(--sidebar-alert-bg, #c62828);
-        opacity: 0.18;
+        opacity: 0.28;
         border-radius: 12px;
+      }
+      .sidebarMenu li.alert {
+        border-left: 3px solid var(--sidebar-alert-bg, #c62828);
       }
       h1 {
         margin-top: 0;
