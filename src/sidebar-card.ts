@@ -175,7 +175,19 @@ class SidebarCard extends LitElement {
                     this.hass.states[sidebarMenuItem.state] &&
                     this.hass.states[sidebarMenuItem.state].state != 'off' &&
                     this.hass.states[sidebarMenuItem.state].state != 'unavailable';
-                  const isAlert = !!this.menuItemAlerts[index];
+                  const rawAlert = sidebarMenuItem.has_alert;
+                  let isAlert = false;
+                  if (typeof rawAlert === 'boolean') {
+                    isAlert = rawAlert;
+                  } else if (typeof rawAlert === 'string') {
+                    const s = rawAlert.trim();
+                    const looksLikeTemplate = s.includes('{{') || s.includes('{%');
+                    isAlert = looksLikeTemplate
+                      ? !!this.menuItemAlerts[index]
+                      : ['true', '1', 'yes', 'on'].includes(s.toLowerCase());
+                  } else {
+                    isAlert = !!this.menuItemAlerts[index];
+                  }
                   const classes = `${isActive ? 'active ' : ''}${isAlert ? 'alert' : ''}`.trim();
                   return html`
                     <li
